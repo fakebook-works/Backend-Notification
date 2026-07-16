@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\NotificationService\\NotificationService\\NotificationService.csproj": {}
+    "D:\\Fakebook\\NotificationService\\NotificationService\\NotificationService.csproj": {}
   },
   "projects": {
-    "D:\\NotificationService\\NotificationService\\NotificationService.csproj": {
+    "D:\\Fakebook\\NotificationService\\NotificationService\\NotificationService.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\NotificationService\\NotificationService\\NotificationService.csproj",
+        "projectUniqueName": "D:\\Fakebook\\NotificationService\\NotificationService\\NotificationService.csproj",
         "projectName": "NotificationService",
-        "projectPath": "D:\\NotificationService\\NotificationService\\NotificationService.csproj",
+        "projectPath": "D:\\Fakebook\\NotificationService\\NotificationService\\NotificationService.csproj",
         "packagesPath": "C:\\Users\\Feldway\\.nuget\\packages\\",
-        "outputPath": "D:\\NotificationService\\NotificationService\\obj\\",
+        "outputPath": "D:\\Fakebook\\NotificationService\\NotificationService\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Feldway\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -43,9 +43,31 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "HotChocolate.ApolloFederation": {
+              "target": "Package",
+              "version": "[16.2.2, )"
+            },
+            "HotChocolate.AspNetCore": {
+              "target": "Package",
+              "version": "[16.2.2, )"
+            },
+            "HotChocolate.Subscriptions.InMemory": {
+              "target": "Package",
+              "version": "[16.2.2, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.26, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.11, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[8.0.11, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",

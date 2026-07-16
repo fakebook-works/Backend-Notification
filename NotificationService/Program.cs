@@ -1,44 +1,73 @@
+using HotChocolate.Subscriptions;
+using NotificationService.Api;
+using NotificationService.Data;
+using NotificationService.GraphQL;
+using NotificationService.Security;
+using NotificationService.Services;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
-
+var app = Program.BuildApplication(builder);
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+public partial class Program
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    /// <summary>
+    /// Builds the application pipeline. Kept separate from <c>Run</c> so tests
+    /// can host the same secured GraphQL and REST endpoints in TestServer.
+    /// </summary>
+    public static WebApplication BuildApplication(WebApplicationBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+
+        // Deployment configuration is deliberately required: this service must never
+        // start with an implicit database, Snowflake node, or shared internal secret.
+        builder.Services.AddNotificationPersistence(builder.Configuration);
+        builder.Services
+            .AddOptions<InternalAuthenticationOptions>()
+            .BindConfiguration(InternalAuthenticationOptions.SectionName)
+            .ValidateDataAnnotations()
+            .Validate(
+                options =>
+                    !string.IsNullOrWhiteSpace(options.GatewaySecret) &&
+                    !string.IsNullOrWhiteSpace(options.NotificationServiceSecret),
+                "InternalAuthentication secrets must not be empty or whitespace.")
+            .ValidateOnStart();
+
+        builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
+        builder.Services.AddScoped<INotificationWriter, NotificationWriter>();
+
+        builder.Services.AddNotificationGraphQlServices();
+        builder.Services
+            .AddGraphQLServer()
+            .AddInMemorySubscriptions()
+            .AddNotificationGraphQl();
+
+        var app = builder.Build();
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseHttpsRedirection();
+        app.UseWebSockets();
+        app.UseMiddleware<InternalRequestAuthenticationMiddleware>();
+
+        app.MapInternalNotificationEndpoints();
+        app.MapGraphQL("/graphql");
+        app.MapGet("/health/live", () => Results.Ok(new { status = "ok", service = "Notification" }));
+        app.MapGet("/health/ready", async (
+            NotificationDbContext dbContext,
+            CancellationToken cancellationToken) =>
+            await dbContext.Database.CanConnectAsync(cancellationToken)
+                ? Results.Ok(new { status = "ready", service = "Notification" })
+                : Results.StatusCode(StatusCodes.Status503ServiceUnavailable));
+
+        return app;
+    }
 }

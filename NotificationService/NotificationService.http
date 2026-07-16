@@ -1,6 +1,43 @@
-@NotificationService_HostAddress = http://localhost:5179
+@NotificationService_HostAddress = https://localhost:7190
+@notificationServiceSecret = replace-with-NotificationService-secret
+@gatewaySecret = replace-with-Gateway-secret
+@userId = 2002
 
-GET {{NotificationService_HostAddress}}/weatherforecast/
-Accept: application/json
+### Social Graph: create a notification
+POST {{NotificationService_HostAddress}}/internal/notifications
+Content-Type: application/json
+X-Internal-NotificationService-Secret: {{notificationServiceSecret}}
+Idempotency-Key: social-event-20260714-0001
 
-###
+{
+  "creatorId": 1001,
+  "receiverId": {{userId}},
+  "actionType": 1,
+  "objectId": 3003
+}
+
+### Gateway: list the trusted user's notifications
+POST {{NotificationService_HostAddress}}/graphql
+Content-Type: application/json
+X-Gateway-Secret: {{gatewaySecret}}
+X-User-Id: {{userId}}
+
+{
+  "query": "query Notifications($first: Int!) { notifications(first: $first) { nodes { id creatorId receiverId actionType objectId createdAt isRead } pageInfo { hasNextPage endCursor } unreadCount } }",
+  "variables": {
+    "first": 20
+  }
+}
+
+### Gateway: mark one notification as read
+POST {{NotificationService_HostAddress}}/graphql
+Content-Type: application/json
+X-Gateway-Secret: {{gatewaySecret}}
+X-User-Id: {{userId}}
+
+{
+  "query": "mutation MarkRead($id: ID!) { markNotificationRead(id: $id) { id isRead } }",
+  "variables": {
+    "id": "replace-with-notification-id"
+  }
+}
