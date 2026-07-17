@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "dXK1Mgk3E30=",
+  "dgSpecHash": "2S58huhuIe0=",
   "success": true,
   "projectFilePath": "D:\\Fakebook\\NotificationService\\NotificationService\\NotificationService.csproj",
   "expectedPackageFiles": [
@@ -14,6 +14,7 @@
     "C:\\Users\\Feldway\\.nuget\\packages\\hotchocolate.abstractions\\16.2.2\\hotchocolate.abstractions.16.2.2.nupkg.sha512",
     "C:\\Users\\Feldway\\.nuget\\packages\\hotchocolate.apollofederation\\16.2.2\\hotchocolate.apollofederation.16.2.2.nupkg.sha512",
     "C:\\Users\\Feldway\\.nuget\\packages\\hotchocolate.aspnetcore\\16.2.2\\hotchocolate.aspnetcore.16.2.2.nupkg.sha512",
+    "C:\\Users\\Feldway\\.nuget\\packages\\hotchocolate.aspnetcore.commandline\\16.2.2\\hotchocolate.aspnetcore.commandline.16.2.2.nupkg.sha512",
     "C:\\Users\\Feldway\\.nuget\\packages\\hotchocolate.aspnetcore.pipeline\\16.2.2\\hotchocolate.aspnetcore.pipeline.16.2.2.nupkg.sha512",
     "C:\\Users\\Feldway\\.nuget\\packages\\hotchocolate.authorization\\16.2.2\\hotchocolate.authorization.16.2.2.nupkg.sha512",
     "C:\\Users\\Feldway\\.nuget\\packages\\hotchocolate.caching.memory\\16.2.2\\hotchocolate.caching.memory.16.2.2.nupkg.sha512",
@@ -88,6 +89,7 @@
     "C:\\Users\\Feldway\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.6.2\\swashbuckle.aspnetcore.swaggerui.6.6.2.nupkg.sha512",
     "C:\\Users\\Feldway\\.nuget\\packages\\system.codedom\\4.4.0\\system.codedom.4.4.0.nupkg.sha512",
     "C:\\Users\\Feldway\\.nuget\\packages\\system.collections.immutable\\6.0.0\\system.collections.immutable.6.0.0.nupkg.sha512",
+    "C:\\Users\\Feldway\\.nuget\\packages\\system.commandline\\2.0.5\\system.commandline.2.0.5.nupkg.sha512",
     "C:\\Users\\Feldway\\.nuget\\packages\\system.composition\\6.0.0\\system.composition.6.0.0.nupkg.sha512",
     "C:\\Users\\Feldway\\.nuget\\packages\\system.composition.attributedmodel\\6.0.0\\system.composition.attributedmodel.6.0.0.nupkg.sha512",
     "C:\\Users\\Feldway\\.nuget\\packages\\system.composition.convention\\6.0.0\\system.composition.convention.6.0.0.nupkg.sha512",

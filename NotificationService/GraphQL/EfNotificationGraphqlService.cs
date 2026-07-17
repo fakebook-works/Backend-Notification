@@ -16,6 +16,7 @@ public sealed class EfNotificationGraphqlService(NotificationDbContext dbContext
         long receiverId,
         int first,
         NotificationCursor? after,
+        bool unreadOnly,
         CancellationToken cancellationToken)
     {
         EnsurePositive(receiverId, nameof(receiverId));
@@ -30,6 +31,11 @@ public sealed class EfNotificationGraphqlService(NotificationDbContext dbContext
         IQueryable<DomainNotification> query = dbContext.Notifications
             .AsNoTracking()
             .Where(notification => notification.ReceiverId == receiverId);
+
+        if (unreadOnly)
+        {
+            query = query.Where(notification => !notification.IsRead);
+        }
 
         if (after is { } cursor)
         {

@@ -23,7 +23,12 @@ public static class NotificationPersistenceServiceCollectionExtensions
             throw new InvalidOperationException("ConnectionStrings:NotificationDb must be configured.");
         }
 
-        services.AddDbContext<NotificationDbContext>(options => options.UseNpgsql(connectionString));
+        services.AddDbContext<NotificationDbContext>(options =>
+            options.UseNpgsql(
+                connectionString,
+                postgres => postgres.MigrationsHistoryTable(
+                    "__EFMigrationsHistory",
+                    "notification")));
 
         services.AddOptions<SnowflakeOptions>()
             .BindConfiguration(SnowflakeOptions.SectionName)

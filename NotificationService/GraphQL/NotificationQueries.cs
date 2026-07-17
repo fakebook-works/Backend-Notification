@@ -14,6 +14,7 @@ public sealed class NotificationQueries
     public async Task<NotificationConnection> GetNotificationsAsync(
         int? first,
         string? after,
+        bool? unreadOnly,
         [Service] INotificationGraphqlService notifications,
         [Service] ICurrentGatewayUser currentGatewayUser,
         CancellationToken cancellationToken)
@@ -22,6 +23,7 @@ public sealed class NotificationQueries
             currentGatewayUser.GetRequiredUserId(),
             NotificationPaging.GetPageSize(first),
             NotificationPaging.GetAfterCursor(after),
+            unreadOnly ?? false,
             cancellationToken);
 
         return page.ToConnection();

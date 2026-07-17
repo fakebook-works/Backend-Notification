@@ -56,13 +56,32 @@ partial class NotificationDbContextModelSnapshot : ModelSnapshot
                 .HasColumnName("is_read")
                 .HasDefaultValue(false);
 
+            b.Property<string>("LastPublishError")
+                .HasMaxLength(2000)
+                .HasColumnType("character varying(2000)")
+                .HasColumnName("last_publish_error");
+
+            b.Property<DateTimeOffset?>("NextPublishAttemptAt")
+                .HasColumnType("timestamp with time zone")
+                .HasColumnName("next_publish_attempt_at");
+
             b.Property<long>("ObjectId")
                 .HasColumnType("bigint")
                 .HasColumnName("object_id");
 
+            b.Property<int>("PublishAttemptCount")
+                .ValueGeneratedOnAdd()
+                .HasColumnType("integer")
+                .HasColumnName("publish_attempt_count")
+                .HasDefaultValue(0);
+
             b.Property<long>("ReceiverId")
                 .HasColumnType("bigint")
                 .HasColumnName("receiver_id");
+
+            b.Property<DateTimeOffset?>("RealtimePublishedAt")
+                .HasColumnType("timestamp with time zone")
+                .HasColumnName("realtime_published_at");
 
             b.HasKey("Id");
 
@@ -73,6 +92,10 @@ partial class NotificationDbContextModelSnapshot : ModelSnapshot
             b.HasIndex("ReceiverId", "CreatedAt", "Id")
                 .IsDescending(false, true, true)
                 .HasDatabaseName("ix_notification_receiver_created_id");
+
+            b.HasIndex("NextPublishAttemptAt", "CreatedAt")
+                .HasDatabaseName("ix_notification_pending_realtime")
+                .HasFilter("realtime_published_at IS NULL");
 
             b.HasIndex("ReceiverId")
                 .HasDatabaseName("ix_notification_unread_receiver")

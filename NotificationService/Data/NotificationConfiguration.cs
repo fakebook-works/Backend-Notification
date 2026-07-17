@@ -57,6 +57,23 @@ internal sealed class NotificationConfiguration : IEntityTypeConfiguration<Notif
             .IsUnicode(false)
             .IsRequired();
 
+        builder.Property(notification => notification.RealtimePublishedAt)
+            .HasColumnName("realtime_published_at")
+            .HasColumnType("timestamp with time zone");
+
+        builder.Property(notification => notification.PublishAttemptCount)
+            .HasColumnName("publish_attempt_count")
+            .HasDefaultValue(0)
+            .IsRequired();
+
+        builder.Property(notification => notification.NextPublishAttemptAt)
+            .HasColumnName("next_publish_attempt_at")
+            .HasColumnType("timestamp with time zone");
+
+        builder.Property(notification => notification.LastPublishError)
+            .HasColumnName("last_publish_error")
+            .HasMaxLength(2_000);
+
         builder.HasIndex(notification => notification.IdempotencyKey)
             .IsUnique()
             .HasDatabaseName("ux_notification_idempotency_key");
@@ -68,5 +85,9 @@ internal sealed class NotificationConfiguration : IEntityTypeConfiguration<Notif
         builder.HasIndex(notification => notification.ReceiverId)
             .HasDatabaseName("ix_notification_unread_receiver")
             .HasFilter("is_read = false");
+
+        builder.HasIndex(notification => new { notification.NextPublishAttemptAt, notification.CreatedAt })
+            .HasDatabaseName("ix_notification_pending_realtime")
+            .HasFilter("realtime_published_at IS NULL");
     }
 }

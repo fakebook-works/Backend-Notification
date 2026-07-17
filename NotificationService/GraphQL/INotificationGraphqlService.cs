@@ -14,6 +14,7 @@ public interface INotificationGraphqlService
         long receiverId,
         int first,
         NotificationCursor? after,
+        bool unreadOnly,
         CancellationToken cancellationToken);
 
     /// <summary>

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var app = Program.BuildApplication(builder);
-app.Run();
+app.RunWithGraphQLCommands(args);
 
 public partial class Program
 {
@@ -39,6 +39,22 @@ public partial class Program
 
         builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
         builder.Services.AddScoped<INotificationWriter, NotificationWriter>();
+        if (builder.Configuration.GetValue("Database:ApplyMigrationsOnStartup", false))
+        {
+            builder.Services.AddHostedService<NotificationMigrationHostedService>();
+        }
+        builder.Services
+            .AddOptions<NotificationDeliveryOptions>()
+            .BindConfiguration(NotificationDeliveryOptions.SectionName)
+            .Validate(options => options.PollMilliseconds is >= 50 and <= 60_000,
+                "NotificationDelivery:PollMilliseconds must be between 50 and 60000.")
+            .Validate(options => options.MaxIdlePollMilliseconds is >= 50 and <= 60_000 &&
+                                 options.MaxIdlePollMilliseconds >= options.PollMilliseconds,
+                "NotificationDelivery:MaxIdlePollMilliseconds must be between PollMilliseconds and 60000.")
+            .Validate(options => options.BatchSize is >= 1 and <= 500,
+                "NotificationDelivery:BatchSize must be between 1 and 500.")
+            .ValidateOnStart();
+        builder.Services.AddHostedService<NotificationRealtimeDispatcher>();
 
         builder.Services.AddNotificationGraphQlServices();
         builder.Services
@@ -54,7 +70,9 @@ public partial class Program
             app.UseSwaggerUI();
         }
 
-        app.UseHttpsRedirection();
+        // TLS terminates at the tailnet/frontend edge. This subgraph intentionally
+        // listens on private HTTP only, so redirect middleware would emit warnings
+        // and can break internal health probes.
         app.UseWebSockets();
         app.UseMiddleware<InternalRequestAuthenticationMiddleware>();
 

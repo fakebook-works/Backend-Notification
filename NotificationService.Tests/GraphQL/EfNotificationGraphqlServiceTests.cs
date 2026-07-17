@@ -22,7 +22,7 @@ public sealed class EfNotificationGraphqlServiceTests
 
         var service = new EfNotificationGraphqlService(dbContext);
 
-        var firstPage = await service.GetNotificationsAsync(10, first: 1, after: null, CancellationToken.None);
+        var firstPage = await service.GetNotificationsAsync(10, first: 1, after: null, unreadOnly: false, CancellationToken.None);
 
         Assert.Equal(2, firstPage.UnreadCount);
         Assert.True(firstPage.HasNextPage);
@@ -33,10 +33,29 @@ public sealed class EfNotificationGraphqlServiceTests
             10,
             first: 2,
             new NotificationCursor(firstPage.Items[0].CreatedAt, firstPage.Items[0].Id),
+            unreadOnly: false,
             CancellationToken.None);
 
         Assert.False(secondPage.HasNextPage);
         Assert.Equal([100L, 102L], secondPage.Items.Select(notification => notification.Id));
+    }
+
+    [Fact]
+    public async Task Feed_can_filter_unread_rows_before_cursor_pagination()
+    {
+        await using var dbContext = CreateDbContext();
+        var now = DateTimeOffset.UtcNow;
+        dbContext.Notifications.AddRange(
+            CreateNotification(100, receiverId: 10, now, isRead: true),
+            CreateNotification(101, receiverId: 10, now.AddMinutes(-1), isRead: false),
+            CreateNotification(102, receiverId: 10, now.AddMinutes(-2), isRead: false));
+        await dbContext.SaveChangesAsync();
+
+        var page = await new EfNotificationGraphqlService(dbContext)
+            .GetNotificationsAsync(10, first: 10, after: null, unreadOnly: true, CancellationToken.None);
+
+        Assert.Equal(2, page.UnreadCount);
+        Assert.Equal([101L, 102L], page.Items.Select(item => item.Id));
     }
 
     [Fact]

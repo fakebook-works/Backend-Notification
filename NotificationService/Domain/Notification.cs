@@ -38,4 +38,16 @@ public sealed class Notification
     /// Caller-supplied key used to make internal create requests idempotent.
     /// </summary>
     public string IdempotencyKey { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Set only after the realtime event has been accepted by the subscription provider.
+    /// A null value makes this row a durable transactional outbox item.
+    /// </summary>
+    public DateTimeOffset? RealtimePublishedAt { get; set; }
+
+    public int PublishAttemptCount { get; set; }
+
+    public DateTimeOffset? NextPublishAttemptAt { get; set; }
+
+    public string? LastPublishError { get; set; }
 }

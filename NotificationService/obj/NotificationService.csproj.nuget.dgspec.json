@@ -51,6 +51,10 @@
               "target": "Package",
               "version": "[16.2.2, )"
             },
+            "HotChocolate.AspNetCore.CommandLine": {
+              "target": "Package",
+              "version": "[16.2.2, )"
+            },
             "HotChocolate.Subscriptions.InMemory": {
               "target": "Package",
               "version": "[16.2.2, )"

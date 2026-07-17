@@ -10,6 +10,7 @@
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.26"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
         <PackageReference Include="HotChocolate.AspNetCore" Version="16.2.2" />
+        <PackageReference Include="HotChocolate.AspNetCore.CommandLine" Version="16.2.2" />
         <PackageReference Include="HotChocolate.ApolloFederation" Version="16.2.2" />
         <PackageReference Include="HotChocolate.Subscriptions.InMemory" Version="16.2.2" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">

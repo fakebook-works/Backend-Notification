@@ -1,4 +1,3 @@
-using HotChocolate.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using NotificationService.Data;
@@ -17,7 +16,6 @@ public interface INotificationWriter
 public sealed class NotificationWriter(
     NotificationDbContext dbContext,
     ISnowflakeIdGenerator idGenerator,
-    ITopicEventSender eventSender,
     TimeProvider timeProvider) : INotificationWriter
 {
     public async Task<NotificationCreateResult> CreateAsync(
@@ -68,8 +66,6 @@ public sealed class NotificationWriter(
             EnsureSameCommand(existing, command);
             return new NotificationCreateResult(existing, WasCreated: false);
         }
-
-        await eventSender.SendAsync(NotificationTopics.ForReceiver(notification.ReceiverId), notification, cancellationToken);
 
         return new NotificationCreateResult(notification, WasCreated: true);
     }

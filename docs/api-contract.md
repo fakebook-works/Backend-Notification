@@ -113,7 +113,7 @@ type NotificationConnection {
 }
 
 type Query {
-  notifications(first: Int = 20, after: String): NotificationConnection!
+  notifications(first: Int = 20, after: String, unreadOnly: Boolean = false): NotificationConnection!
 }
 
 type Mutation {
@@ -129,8 +129,8 @@ type Subscription {
 ### Fetch feed
 
 ```graphql
-query Notifications($first: Int!, $after: String) {
-  notifications(first: $first, after: $after) {
+query Notifications($first: Int!, $after: String, $unreadOnly: Boolean) {
+  notifications(first: $first, after: $after, unreadOnly: $unreadOnly) {
     nodes {
       id
       creatorId
@@ -146,8 +146,9 @@ query Notifications($first: Int!, $after: String) {
 }
 ```
 
-`first` mặc định 20, server chấp nhận 1–50. Feed sắp xếp `createdAt DESC, id
-DESC`; `after` là cursor opaque của item cuối trang trước.
+`first` mặc định 20, server chấp nhận 1–50. `unreadOnly=true` được lọc trong SQL
+trước cursor pagination; `unreadCount` vẫn là tổng chưa đọc đầy đủ của receiver. Feed
+sắp xếp `createdAt DESC, id DESC`; `after` là cursor opaque của item cuối trang trước.
 
 ### Đánh dấu đã đọc
 
@@ -188,8 +189,9 @@ Gateway phải gửi hai trusted headers trên HTTP SSE handshake. Service chố
 user context lúc kết nối và chỉ deliver event có `receiverId` bằng user đó.
 Không có argument để subscribe user khác.
 
-Provider subscription v1 là in-memory; chạy một NotificationService instance
-cho realtime. Cần provider phân tán/outbox trước khi triển khai nhiều replica.
+Provider subscription v1 là in-memory; chạy một NotificationService instance cho
+realtime. Row notification hiện là durable outbox và retry qua restart, nhưng vẫn cần
+provider subscription phân tán trước khi triển khai nhiều replica.
 
 ## 3. Federation
 
