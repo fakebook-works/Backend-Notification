@@ -2,7 +2,7 @@
 
 ## Mục tiêu
 
-Xây dựng NotificationService .NET 8 làm Apollo Federation v1 subgraph. Gateway là
+Xây dựng NotificationService .NET 8 làm subgraph của HotChocolate Fusion. Gateway là
 điểm vào GraphQL duy nhất; Social Graph tạo thông báo qua REST nội bộ. Service
 lưu notification trong PostgreSQL, trả feed qua GraphQL và phát thông báo mới
 qua GraphQL subscription thời gian thực.
@@ -18,7 +18,7 @@ qua GraphQL subscription thời gian thực.
 - Client không gọi service trực tiếp. GraphQL không nhận `userId` hoặc
   `receiverId` từ arguments; danh tính luôn lấy từ header đáng tin cậy do
   Gateway gửi.
-- Service không gọi ngược Gateway. Gateway compose schema Apollo Federation v1, forward
+- Service không gọi ngược Gateway. Gateway compose schema bằng HotChocolate Fusion, forward
   trusted headers và duy trì luồng `text/event-stream` cho subscription.
 
 ## Cấu hình bắt buộc
@@ -40,7 +40,7 @@ environment variables/secrets manager.
 Sau khi đặt cấu hình, cài `dotnet-ef` 8.0.x nếu máy chưa có, rồi chạy migration
 bằng `dotnet ef database update --project NotificationService/NotificationService.csproj`.
 Chạy service bằng `dotnet run --project NotificationService/NotificationService.csproj`.
-Không tự động apply migration khi application startup.
+Service tự động apply migration khi application startup.
 
 ## Dữ liệu và persistence
 
@@ -114,7 +114,7 @@ Response tạo/replay dùng dạng:
 
 ## GraphQL Federation contract
 
-Expose Apollo Federation v1-compatible `Notification` entity với `id: ID!`; ID lớn được
+Expose Fusion-compatible `Notification` entity với `id: ID!`; ID lớn được
 serialize bằng GraphQL `ID`, không phải GraphQL `Int`. Gateway truyền
 `X-User-Id` là decimal `long` dương, sau đó resolver dùng giá trị này
 cho mọi authorization/filter.
