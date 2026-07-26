@@ -60,6 +60,20 @@ public partial class Program
             .ValidateOnStart();
         builder.Services.AddHostedService<NotificationRealtimeDispatcher>();
 
+        builder.Services
+            .AddOptions<NotificationRetentionOptions>()
+            .BindConfiguration(NotificationRetentionOptions.SectionName)
+            .Validate(options => options.RetentionDays is >= 1 and <= 3_650,
+                "NotificationRetention:RetentionDays must be between 1 and 3650.")
+            .Validate(options => options.BatchSize is >= 1 and <= 10_000,
+                "NotificationRetention:BatchSize must be between 1 and 10000.")
+            .Validate(options => options.MaxBatchesPerSweep is >= 1 and <= 1_000,
+                "NotificationRetention:MaxBatchesPerSweep must be between 1 and 1000.")
+            .Validate(options => options.SweepIntervalMinutes is >= 1 and <= 1_440,
+                "NotificationRetention:SweepIntervalMinutes must be between 1 and 1440.")
+            .ValidateOnStart();
+        builder.Services.AddHostedService<NotificationRetentionService>();
+
         builder.Services.AddNotificationGraphQlServices();
         builder.Services
             .AddGraphQLServer()
