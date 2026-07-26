@@ -22,6 +22,10 @@ public partial class Program
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        builder.Services.AddInternalRequestSigning(
+            builder.Configuration,
+            "InternalAuthentication:NotificationServiceSecret",
+            "X-Internal-NotificationService-Secret");
 
         // Deployment configuration is deliberately required: this service must never
         // start with an implicit database, Snowflake node, or shared internal secret.
@@ -74,6 +78,7 @@ public partial class Program
         // listens on private HTTP only, so redirect middleware would emit warnings
         // and can break internal health probes.
         app.UseWebSockets();
+        app.UseMiddleware<InternalRequestSignatureMiddleware>();
         app.UseMiddleware<InternalRequestAuthenticationMiddleware>();
 
         app.MapInternalNotificationEndpoints();
