@@ -10,8 +10,7 @@ public static class InternalNotificationEndpoints
     public static IEndpointRouteBuilder MapInternalNotificationEndpoints(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapPost("/internal/notifications", CreateNotificationAsync)
-            .WithName("CreateInternalNotification")
-            .WithOpenApi();
+            .WithName("CreateInternalNotification");
 
         return endpoints;
     }

@@ -20,6 +20,7 @@ public partial class Program
     {
         ArgumentNullException.ThrowIfNull(builder);
 
+        builder.Services.AddFakebookServiceDefaults(builder.Configuration, "fakebook-notification");
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddInternalRequestSigning(
@@ -100,8 +101,10 @@ public partial class Program
         app.MapGet("/health/live", () => Results.Ok(new { status = "ok", service = "Notification" }));
         app.MapGet("/health/ready", async (
             NotificationDbContext dbContext,
+            IInternalNonceStore nonceStore,
             CancellationToken cancellationToken) =>
-            await dbContext.Database.CanConnectAsync(cancellationToken)
+            await dbContext.Database.CanConnectAsync(cancellationToken) &&
+            await nonceStore.IsAvailableAsync(cancellationToken)
                 ? Results.Ok(new { status = "ready", service = "Notification" })
                 : Results.StatusCode(StatusCodes.Status503ServiceUnavailable));
 
