@@ -31,7 +31,9 @@ It supplies `creatorId`, `receiverId`, `actionType`, `objectId`, and an
 ## PostgreSQL schema
 
 ```sql
-CREATE TABLE notification (
+CREATE SCHEMA notification;
+
+CREATE TABLE notification.notification (
     id bigint PRIMARY KEY,
     creator_id bigint NOT NULL,
     receiver_id bigint NOT NULL,
@@ -47,16 +49,27 @@ CREATE TABLE notification (
 );
 
 CREATE INDEX ix_notification_receiver_created_id
-    ON notification (receiver_id, created_at DESC, id DESC);
+    ON notification.notification (receiver_id, created_at DESC, id DESC);
 
 CREATE INDEX ix_notification_unread_receiver
-    ON notification (receiver_id)
+    ON notification.notification (receiver_id)
     WHERE is_read = false;
 
 CREATE INDEX ix_notification_pending_realtime
-    ON notification (next_publish_attempt_at, created_at)
+    ON notification.notification (next_publish_attempt_at, created_at)
     WHERE realtime_published_at IS NULL;
 ```
+
+Startup applies the compiled EF migrations automatically by default, under a
+service-specific PostgreSQL advisory lock. Configure a DDL-capable role with
+`ConnectionStrings__NotificationMigrationDb`; when it is empty the runner falls back to
+`ConnectionStrings__NotificationDb` for compatibility. Set
+`Database__ApplyMigrationsOnStartup=false` only when an external release job has already
+applied the migrations. `Database__MigrationCommandTimeoutSeconds` defaults to 300 and
+accepts 1–3600 seconds. A migration failure aborts startup.
+After EF reports migrations current, startup also verifies every required column's
+PostgreSQL type/nullability and the pending-realtime partial index so stale or corrupt
+migration history cannot make the service ready with an incompatible physical schema.
 
 Each notification row is also a durable realtime outbox item. The nullable
 `realtime_published_at`, retry count/time and last-error columns are internal and are not

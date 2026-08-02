@@ -38,4 +38,25 @@ public static class NotificationPersistenceServiceCollectionExtensions
 
         return services;
     }
+
+    /// <summary>
+    /// Applies the compiled, versioned EF migrations before request-processing
+    /// workers start. Automatic migration is the default; deployments can opt out
+    /// with <c>Database:ApplyMigrationsOnStartup=false</c> when migrations are run
+    /// as a separate release job.
+    /// </summary>
+    public static IServiceCollection AddNotificationDatabaseMigrations(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configuration);
+
+        if (configuration.GetValue("Database:ApplyMigrationsOnStartup", true))
+        {
+            services.AddHostedService<NotificationMigrationHostedService>();
+        }
+
+        return services;
+    }
 }

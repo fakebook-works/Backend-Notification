@@ -44,10 +44,7 @@ public partial class Program
 
         builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
         builder.Services.AddScoped<INotificationWriter, NotificationWriter>();
-        if (builder.Configuration.GetValue("Database:ApplyMigrationsOnStartup", false))
-        {
-            builder.Services.AddHostedService<NotificationMigrationHostedService>();
-        }
+        builder.Services.AddNotificationDatabaseMigrations(builder.Configuration);
         builder.Services
             .AddOptions<NotificationDeliveryOptions>()
             .BindConfiguration(NotificationDeliveryOptions.SectionName)

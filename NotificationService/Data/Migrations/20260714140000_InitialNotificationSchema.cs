@@ -8,8 +8,11 @@ public partial class InitialNotificationSchema : Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)
     {
+        migrationBuilder.EnsureSchema(name: "notification");
+
         migrationBuilder.CreateTable(
             name: "notification",
+            schema: "notification",
             columns: table => new
             {
                 id = table.Column<long>(type: "bigint", nullable: false),
@@ -31,18 +34,21 @@ public partial class InitialNotificationSchema : Migration
 
         migrationBuilder.CreateIndex(
             name: "ux_notification_idempotency_key",
+            schema: "notification",
             table: "notification",
             column: "idempotency_key",
             unique: true);
 
         migrationBuilder.CreateIndex(
             name: "ix_notification_receiver_created_id",
+            schema: "notification",
             table: "notification",
             columns: new[] { "receiver_id", "created_at", "id" },
             descending: new[] { false, true, true });
 
         migrationBuilder.CreateIndex(
             name: "ix_notification_unread_receiver",
+            schema: "notification",
             table: "notification",
             column: "receiver_id",
             filter: "is_read = false");
@@ -50,6 +56,6 @@ public partial class InitialNotificationSchema : Migration
 
     protected override void Down(MigrationBuilder migrationBuilder)
     {
-        migrationBuilder.DropTable(name: "notification");
+        migrationBuilder.DropTable(name: "notification", schema: "notification");
     }
 }

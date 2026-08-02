@@ -36,7 +36,7 @@ public sealed class NotificationWriterTests
     }
 
     [Fact]
-    public void Realtime_outbox_migration_is_discoverable()
+    public void Realtime_outbox_migration_is_discoverable_and_model_is_schema_qualified()
     {
         using var dbContext = new NotificationDbContext(
             new DbContextOptionsBuilder<NotificationDbContext>()
@@ -44,6 +44,9 @@ public sealed class NotificationWriterTests
                 .Options);
 
         Assert.Contains("20260716003000_AddNotificationRealtimeOutbox", dbContext.Database.GetMigrations());
+        Assert.Equal(
+            "notification",
+            dbContext.Model.FindEntityType(typeof(Notification))?.GetSchema());
     }
 
     private sealed class FixedSnowflakeIdGenerator(long id) : ISnowflakeIdGenerator

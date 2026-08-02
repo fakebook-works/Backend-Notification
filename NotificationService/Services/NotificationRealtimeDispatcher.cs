@@ -57,7 +57,7 @@ public sealed class NotificationRealtimeDispatcher(
             .FromSqlInterpolated(
                 $"""
                 SELECT *
-                FROM notification
+                FROM notification.notification
                 WHERE realtime_published_at IS NULL
                   AND (next_publish_attempt_at IS NULL OR next_publish_attempt_at <= {now})
                 ORDER BY created_at, id

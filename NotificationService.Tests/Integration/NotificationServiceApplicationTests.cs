@@ -25,6 +25,7 @@ public sealed class NotificationServiceApplicationTests : IAsyncLifetime
         {
             ["ConnectionStrings:NotificationDb"] =
                 "Host=127.0.0.1;Port=5432;Database=notification_service_test;Username=postgres;Password=test",
+            ["Database:ApplyMigrationsOnStartup"] = "false",
             ["InternalAuthentication:GatewaySecret"] = GatewaySecret,
             ["InternalAuthentication:NotificationServiceSecret"] = NotificationServiceSecret,
             ["Snowflake:NodeId"] = "7"

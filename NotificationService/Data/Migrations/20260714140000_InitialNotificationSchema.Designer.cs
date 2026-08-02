@@ -80,7 +80,7 @@ partial class InitialNotificationSchema
                 .HasDatabaseName("ix_notification_unread_receiver")
                 .HasFilter("is_read = false");
 
-            b.ToTable("notification", (string)null);
+            b.ToTable("notification", "notification");
         });
 #pragma warning restore 612, 618
     }
