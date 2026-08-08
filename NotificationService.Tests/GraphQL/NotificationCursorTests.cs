@@ -25,4 +25,12 @@ public sealed class NotificationCursorTests
     {
         Assert.False(NotificationCursor.TryDecode(input, out _));
     }
+
+    [Fact]
+    public void Cursor_rejects_oversized_input_before_decoding()
+    {
+        var input = new string('A', NotificationCursor.MaxEncodedLength + 1);
+
+        Assert.False(NotificationCursor.TryDecode(input, out _));
+    }
 }

@@ -85,9 +85,16 @@ public static class InternalNotificationEndpoints
         {
             errors["Idempotency-Key"] = ["The Idempotency-Key header must be at most 128 characters."];
         }
+        else if (!IsSafeIdempotencyKey(idempotencyKey))
+        {
+            errors["Idempotency-Key"] = ["The Idempotency-Key header must contain printable ASCII characters only."];
+        }
 
         return errors;
     }
+
+    private static bool IsSafeIdempotencyKey(string value) =>
+        value.All(character => character is >= '\x21' and <= '\x7e');
 }
 
 public sealed record CreateNotificationRequest(

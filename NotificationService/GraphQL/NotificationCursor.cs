@@ -9,6 +9,8 @@ namespace NotificationService.GraphQL;
 /// </summary>
 public readonly record struct NotificationCursor(DateTimeOffset CreatedAt, long Id)
 {
+    public const int MaxEncodedLength = 256;
+
     public static string Encode(DateTimeOffset createdAt, long id)
     {
         if (id <= 0)
@@ -28,7 +30,7 @@ public readonly record struct NotificationCursor(DateTimeOffset CreatedAt, long 
     {
         cursor = default;
 
-        if (string.IsNullOrWhiteSpace(encoded))
+        if (string.IsNullOrWhiteSpace(encoded) || encoded.Length > MaxEncodedLength)
         {
             return false;
         }
